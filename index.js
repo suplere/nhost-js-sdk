@@ -53,7 +53,7 @@ export default class nhost {
     this.startRefetchTokenInterval();
   }
 
-  setSession(data) {
+  async setSession(data) {
     const {
       jwt_token,
       refetch_token,
@@ -63,9 +63,9 @@ export default class nhost {
     var claims = jwt_decode(jwt_token);
     this.claims = claims;
 
-    this.storage.clear();
-    this.storage.setItem('refetch_token', refetch_token);
-    this.storage.setItem('user_id', user_id);
+    await this.storage.clear();
+    await this.storage.setItem('refetch_token', refetch_token);
+    await this.storage.setItem('user_id', user_id.toString());
 
     this.inMemory['jwt_token'] = jwt_token;
     this.inMemory['user_id'] = user_id;
@@ -85,7 +85,7 @@ export default class nhost {
     return this.claims;
   }
 
-  getJWTToken() {
+  async getJWTToken() {
     return this.inMemory['jwt_token'];
   }
 
@@ -99,8 +99,8 @@ export default class nhost {
 
   async refetchToken() {
 
-    const user_id = this.storage.getItem('user_id');
-    const refetch_token = this.storage.getItem('refetch_token');
+    const user_id = await this.storage.getItem('user_id');
+    const refetch_token = await this.storage.getItem('refetch_token');
 
     if (!user_id || !refetch_token) {
       return this.logout();
