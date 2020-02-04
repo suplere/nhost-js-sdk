@@ -6,7 +6,6 @@ Nhost js sdk to handle **Auth** and **Storage**.
 
 `npm install --save nhost-js-sdk`
 
-
 ## Setup
 
 in ex `/src/nhost/index.js`:
@@ -16,6 +15,7 @@ import nhost from 'nhost-js-sdk';
 
 const config = {
   endpoint: process.env.REACT_APP_BACKEND_ENDPOINT,
+  appId: process.env.APP_ID,
 };
 
 nhost.initializeApp(config);
@@ -29,11 +29,9 @@ export {
 };
 ```
 
-
 ## Usage across in your app
 
 `import { auth, storage } from './path-to-nhost/index.js';`
-
 
 ## Auth
 
@@ -74,7 +72,6 @@ auth.onAuthStateChanged(data => {
 });
 ```
 
-
 ### Activate account
 
 ```
@@ -84,7 +81,6 @@ try {
   // handle error
 }
 ```
-
 
 ### New password
 
@@ -130,7 +126,6 @@ try {
   // handle error
 }
 ```
-
 
 # React Native
 

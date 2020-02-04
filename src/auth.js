@@ -10,12 +10,13 @@ export default class auth {
     this.logged_in = null;
     this.auth_state_change_function = null;
     this.interval = null;
+    this.appId = config.appId
 
     this.refreshToken = this.refreshToken.bind(this);
     this.autoLogin = this.autoLogin.bind(this);
 
     // use external configured storage if existing, ex AsyncStorage
-    if(config.storage) {
+    if (config.storage) {
       this.storage = config.storage
     } else {
       this.storage = localStorage;
@@ -50,9 +51,9 @@ export default class auth {
 
   _removeParam(key, sourceURL) {
     var rtn = sourceURL.split("?")[0],
-    param,
-    params_arr = [],
-    queryString = (sourceURL.indexOf("?") !== -1) ? sourceURL.split("?")[1] : "";
+      param,
+      params_arr = [],
+      queryString = (sourceURL.indexOf("?") !== -1) ? sourceURL.split("?")[1] : "";
     if (queryString !== "") {
       params_arr = queryString.split("&");
       for (var i = params_arr.length - 1; i >= 0; i -= 1) {
@@ -152,7 +153,7 @@ export default class auth {
   }
 
   startRefreshTokenInterval() {
-    this.interval = setInterval(this.refreshToken, (5*60*1000));
+    this.interval = setInterval(this.refreshToken, (5 * 60 * 1000));
   }
 
   stopRefreshTokenInterval() {
@@ -205,6 +206,7 @@ export default class auth {
         data: {
           username,
           password,
+          appId: this.appId
         },
         withCredentials: true,
       });
