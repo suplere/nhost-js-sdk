@@ -7,8 +7,10 @@ export default class auth {
 
     this.inMemory = inMemory;
     this.endpoint = config.endpoint;
+    this.refreshTime = config.refreshTime || (5 * 60 * 1000)
     this.logged_in = null;
     this.auth_state_change_function = null;
+    this.auth_init_callback = null;
     this.interval = null;
     this.appId = config.appId
 
@@ -47,9 +49,12 @@ export default class auth {
     this.inMemory.claims = null;
 
     this.autoLogin()
+    if (typeof this.auth_init_callback === 'function') {
+      this.auth_init_callback();
+    }
   }
 
-  _removeParam(key, sourceURL) {
+  _removeParam (key, sourceURL) {
     var rtn = sourceURL.split("?")[0],
       param,
       params_arr = [],
@@ -69,7 +74,7 @@ export default class auth {
     return rtn;
   }
 
-  async autoLogin() {
+  async autoLogin () {
     // try refresh token.
     const refresh_token_ok = await this.refreshToken();
 
@@ -85,9 +90,10 @@ export default class auth {
     }
 
     this.startRefreshTokenInterval();
+    return true;
   }
 
-  async syncLogout(event) {
+  async syncLogout (event) {
 
     if (event.key !== 'logout') return;
 
@@ -107,17 +113,22 @@ export default class auth {
     }
   }
 
-  onAuthStateChanged(f) {
+  onAuthStateChanged (f) {
     // set custom onAuthStateChanged function
     this.auth_state_change_function = f;
   }
 
-  initSession(data) {
+  onAuthInitCallback (f) {
+    // this is call after autologin
+    this.auth_init_callback = f
+  }
+
+  initSession (data) {
     this.setSession(data);
     this.startRefreshTokenInterval();
   }
 
-  setSession(data) {
+  setSession (data) {
     const {
       refresh_token,
       jwt_token,
@@ -140,28 +151,28 @@ export default class auth {
     }
   }
 
-  getClaims() {
+  getClaims () {
     return this.inMemory.claims;
   }
 
-  getClaim(claim) {
+  getClaim (claim) {
     return this.inMemory.claims[claim];
   }
 
-  getJWTToken() {
+  getJWTToken () {
     return this.inMemory.jwt_token;
   }
 
-  startRefreshTokenInterval() {
-    this.interval = setInterval(this.refreshToken, (5 * 60 * 1000));
+  startRefreshTokenInterval () {
+    this.interval = setInterval(this.refreshToken, this.refreshTime);
   }
 
-  stopRefreshTokenInterval() {
+  stopRefreshTokenInterval () {
     clearInterval(this.interval);
   }
 
 
-  async refreshToken() {
+  async refreshToken () {
     try {
       const data = await this.refresh_token();
       this.setSession(data);
@@ -171,11 +182,11 @@ export default class auth {
     }
   }
 
-  isAuthenticated() {
+  isAuthenticated () {
     return this.logged_in;
   }
 
-  async register(email, username, password, register_data = null) {
+  async register (email, username, password, register_data = null) {
 
     let req;
     try {
@@ -196,7 +207,7 @@ export default class auth {
     return req.data;
   }
 
-  async login(username, password) {
+  async login (username, password) {
 
     let data;
 
@@ -220,7 +231,7 @@ export default class auth {
     this.initSession(data);
   }
 
-  async logout(all = false) {
+  async logout (all = false) {
 
     try {
       window.localStorage.setItem('logout', Date.now())
@@ -265,7 +276,7 @@ export default class auth {
     return false;
   }
 
-  async refresh_token() {
+  async refresh_token () {
 
     const refresh_token = this.storage.getItem('refresh_token');
 
@@ -290,7 +301,7 @@ export default class auth {
   }
 
 
-  async activate_account(secret_token) {
+  async activate_account (secret_token) {
 
     try {
       const req = await axios(`${this.endpoint}/auth/local/activate-account`, {
@@ -308,7 +319,7 @@ export default class auth {
     }
   }
 
-  async new_password(secret_token, password) {
+  async new_password (secret_token, password) {
 
     try {
       const req = await axios(`${this.endpoint}/auth/local/new-password`, {
@@ -327,7 +338,7 @@ export default class auth {
     }
   }
 
-  clearStore() {
+  clearStore () {
     this.store = {
       jwt_token: null,
     };
