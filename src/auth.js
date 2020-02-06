@@ -49,9 +49,11 @@ export default class auth {
     this.inMemory.claims = null;
 
     this.autoLogin()
-    if (typeof this.auth_init_callback === 'function') {
-      this.auth_init_callback();
-    }
+      .then(() => {
+        if (typeof this.auth_init_callback === 'function') {
+          this.auth_init_callback();
+        }
+      })
   }
 
   _removeParam (key, sourceURL) {
