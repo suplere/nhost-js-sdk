@@ -10,7 +10,7 @@ export default class auth {
     this.refreshTime = config.refreshTime || (5 * 60 * 1000)
     this.logged_in = null;
     this.auth_state_change_function = null;
-    this.auth_init_callback = null;
+    this.auth_init_callback = config.authInitCallback || null;
     this.interval = null;
     this.appId = config.appId
 
@@ -116,11 +116,6 @@ export default class auth {
   onAuthStateChanged (f) {
     // set custom onAuthStateChanged function
     this.auth_state_change_function = f;
-  }
-
-  onAuthInitCallback (f) {
-    // this is call after autologin
-    this.auth_init_callback = f
   }
 
   initSession (data) {
