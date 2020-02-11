@@ -284,7 +284,8 @@ export default class auth {
     try {
       const req = await axios(`${this.endpoint}/auth/refresh-token`, {
         data: {
-          refresh_token
+          refresh_token,
+          appId: this.appId
         },
         method: 'post',
         withCredentials: true,
